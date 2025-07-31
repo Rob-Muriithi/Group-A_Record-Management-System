@@ -1,5 +1,6 @@
 import sys
-sys.path('../conf')
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import datetime
 from typing import List, Union
 import json
@@ -9,7 +10,8 @@ from conf.data_class import *
 
 class RecordManager():
 
-    def __init__(self):
+    def __init__(self, file='src/record/record.jsonl'):
+        self.file = file
         self.data = {
             "clients": [],
             "airlines": [],
@@ -17,23 +19,23 @@ class RecordManager():
         }
         self.load_data()        
         
-    def load_data(self, file:str):
+    def load_data(self):
         try:
-            with open(file) as f:
+            with open(self.file) as f:
                 self.data = json.load(f)
         except FileNotFoundError:
-            print(f"File {file} not found. Starting with empty data.")
+            print(f"File {self.file} not found. Starting with empty data.")
         except json.JSONDecodeError:
-            print(f"Error decoding JSON from {file}. Starting with empty data.")
+            print(f"Error decoding JSON from {self.file}. Starting with empty data.")
         except Exception as e:
             print(f"Unexpected error loading data: {e}")
 
-    def save_to_json_file(self, file:str):
+    def save_to_json_file(self):
         try:
-            with open(file, 'w') as f:
+            with open(self.file, 'w') as f:
                 json.dump(self.data, f, indent=2)
         except Exception as e:
-            print(f"Error saving data to {file}: {e}")
+            print(f"Error saving data to {self.file}: {e}")
 
     def add_client(self, client_data):
         try:
