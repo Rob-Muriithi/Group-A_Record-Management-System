@@ -52,7 +52,7 @@ class RecordManager():
             airline = Airline(**airline_data)
             self.data["airlines"].append(airline.to_dict())
             self.save_to_json_file()
-            return "airline Added!"
+            return "Airline Added!"
         except Exception as e:
             print(f"Error adding airline: {e}")
             return "Failed to add airline."
@@ -62,13 +62,17 @@ class RecordManager():
             flight = Flight(**flight_data)
             self.data["flights"].append(flight.to_dict())
             self.save_to_json_file()
-            return "flight Added!"
+            return "Flight Added!"
         except Exception as e:
             print(f"Error adding flight: {e}")
             return "Failed to add flight."
 
     def update_client(self, id:int, **updates) ->bool:
         try:
+            id_present = any(client.get("id") == id for client in self.data["clients"])
+            if not id_present:
+                print(f"Client with ID {id} not found.")
+                return False
             for client in self.data["clients"]:
                 if client.get("ID", client.get("id")) == id:
                     for k, v in updates.items():
@@ -83,6 +87,10 @@ class RecordManager():
 
     def update_airline(self, id:int, **updates) ->bool:
         try:
+            id_present = any(airline.get("id") == id for airline in self.data["airlines"])
+            if not id_present:
+                print(f"Airline with ID {id} not found.")
+                return False
             for airline in self.data["airlines"]:
                 if airline.get("ID", airline.get("id")) == id:
                     for k, v in updates.items():
@@ -97,6 +105,10 @@ class RecordManager():
 
     def update_flight(self, id:int, **updates) ->bool:
         try:
+            id_present = any(flight.get("id") == id for flight in self.data["flights"])
+            if not id_present:
+                print(f"Flight with ID {id} not found.")
+                return False
             for flight in self.data["flights"]:
                 if flight.get("ID", flight.get("id")) == id:
                     for k, v in updates.items():
@@ -111,6 +123,10 @@ class RecordManager():
 
     def delete_client(self, client_id):
         try:
+            id_present = any(client.get("id") == client_id for client in self.data["clients"])
+            if not id_present:
+                print(f"Client with ID {client_id} not found.")
+                return False
             self.data["clients"] = [client for client in self.data["clients"] if client.get("id") != client_id]
             self.save_to_json_file()
             return True
@@ -120,6 +136,10 @@ class RecordManager():
 
     def delete_airline(self, airline_id):
         try:
+            id_present = any(airline.get("id") == airline_id for airline in self.data["airlines"])
+            if not id_present:
+                print(f"Airline with ID {airline_id} not found.")
+                return False
             self.data["airlines"] = [airline for airline in self.data["airlines"] if airline.get("id") != airline_id]
             self.save_to_json_file()
             return True
@@ -129,9 +149,71 @@ class RecordManager():
 
     def delete_flight(self, flight_id):
         try:
+            id_present = any(flight.get("id") == flight_id for flight in self.data["flights"])
+            if not id_present:
+                print(f"Flight with ID {flight_id} not found.")
+                return False
             self.data["flights"] = [flight for flight in self.data["flights"] if flight.get("id") != flight_id]
             self.save_to_json_file()
             return True
         except Exception as e:
             print(f"Error deleting flight: {e}")
             return False
+        
+    def search_client(self, client_id):
+        try:
+            id_present = any(client.get("id") == client_id for client in self.data["clients"])
+            if not id_present:
+                print(f"Client record with ID {client_id} not found.")
+                return False
+            for client in self.data["clients"]:
+                if client.get("id") == client_id:
+                    return client
+            return None
+        except Exception as e:
+            print(f"Error searching for client: {e}")
+            return None
+        
+    def search_airline(self, airline_id):
+        try:
+            id_present = any(airline.get("id") == airline_id for airline in self.data["airlines"])
+            if not id_present:
+                print(f"Airline record with ID {airline_id} not found.")
+                return False
+            for airline in self.data["airlines"]:
+                if airline.get("id") == airline_id:
+                    return airline
+            return None
+        except Exception as e:
+            print(f"Error searching for airline: {e}")
+            return None
+        
+    def search_flight(self, flight_id):
+        try:
+            id_present = any(flight.get("id") == flight_id for flight in self.data["flights"])
+            if not id_present:
+                print(f"Flight record with ID {flight_id} not found.")
+                return False
+            for flight in self.data["flights"]:
+                if flight.get("id") == flight_id:
+                    return flight
+            return None
+        except Exception as e:
+            print(f"Error searching for flight: {e}")
+            return None
+        
+    def search_record(self, record_type: str, record_id: int) -> Union[Client, Airline, Flight, None]:
+        try:
+            if record_type == "clients":
+                return self.search_client(record_id)
+            elif record_type == "airlines":
+                return self.search_airline(record_id)
+            elif record_type == "flights":
+                return self.search_flight(record_id)
+            else:
+                print(f"Unknown record type: {record_type}")
+                return None
+        except Exception as e:
+            print(f"Error searching for record: {e}")
+            return None
+    

@@ -12,9 +12,6 @@ manager = RecordManager()
 
 # Initialize window
 root = tk.Tk()
-root.title("Travel Agent Record Management System")
-root.geometry("500x500")
-root.configure(bg="#fff4f4")
 
 # Header
 header = tk.Label(
@@ -118,13 +115,15 @@ def open_record_manager_window():
 
     def search_record():
         record_type = record_type_var.get().lower() + "s"
+        if record_id_entry.get() == "":
+            messagebox.showerror("Error", "Please enter a record ID.")
+            return
         record_id = int(record_id_entry.get())
+        found = manager.search_record(record_type, record_id)
 
-        found = None
-        for record in manager.data[record_type]:
-            if record.get("id") == record_id:
-                found = record
-                break
+        if not found:
+            messagebox.showerror("Error", "Record not found.")
+            return
 
         result_text.config(state="normal")
         result_text.delete("1.0", tk.END)
@@ -137,6 +136,9 @@ def open_record_manager_window():
 
     def delete_record():
         record_type = record_type_var.get().lower()
+        if record_id_entry.get() == "":
+            messagebox.showerror("Error", "Please enter a record ID.")
+            return
         record_id = int(record_id_entry.get())
 
         if record_type == "client":
@@ -153,7 +155,7 @@ def open_record_manager_window():
             messagebox.showinfo("Success", "Record deleted successfully.")
             result_text.delete("1.0", tk.END)
         else:
-            messagebox.showerror("Error", "Failed to delete record.")
+            messagebox.showerror("Error", "Failed to delete record, record not found.")
         result_text.config(state="disabled")
 
     def view_all_records():
@@ -314,5 +316,3 @@ for i, (text, cmd) in enumerate(btns):
         state="normal"
     ).grid(row=i, column=0, pady=5)
 
-# Start main loop
-root.mainloop()
