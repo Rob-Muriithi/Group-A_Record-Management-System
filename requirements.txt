@@ -1,1 +1,4 @@
-jsonlines
+Python 3.10+ 
+Tinker
+Pytest
+Json
